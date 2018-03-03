@@ -11,7 +11,7 @@ class eNFA:
         self.current_state = start_state
 
     def display_details(self):
-        print("Q: ", self.states)
+        print("Q: ", set(self.states))
         print("Σ: ", self.alphabet)
         print("q0: ", self.start_state)
         print("F: ", self.accept_states)
@@ -24,7 +24,7 @@ with open("input") as f:
     # remove null character
 temp = [x.strip() for x in temp]
 
-states = set(temp[0].split())
+states = temp[0].split()
 alphabet = {0, 1, 'e'}
 start_state = set(temp[1].split())
 accept_states = set(temp[2].split())
@@ -34,7 +34,7 @@ for i in range(3, len(states) + 3):
     temp_dict = {}
     for idx, val in enumerate(alphabet):
         temp_dict[val] = temp[i].split()[idx]
-    tf[i - 3] = temp_dict
+    tf[states[i - 3]] = temp_dict
 
 E1 = eNFA(states, alphabet, tf, start_state, accept_states)
 E1.display_details()
