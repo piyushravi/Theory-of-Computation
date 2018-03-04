@@ -8,15 +8,15 @@ class eNFA:
         self.transition_function = transition_function
         self.start_state = start_state
         self.accept_states = accept_states
-        self.current_state = start_state
         self.eCloseDict = {}
         self.getEClose()
 
     def display_details(self):
+        print("\n E-NFA: ")
         print("Q: ", set(self.states))
-        print("Σ: ", self.alphabet)
-        print("q0: ", self.start_state)
-        print("F: ", self.accept_states)
+        print("Σ: ", set(self.alphabet))
+        print("q0: ", set(self.start_state))
+        print("F: ", set(self.accept_states))
         print("δ: ")
         pprint.pprint(self.transition_function)
         print("EClose: ")
@@ -38,6 +38,18 @@ class eNFA:
         for state in states:
             if state not in self.eCloseDict:
                 self.eCloseDict[state] = eClose(state)
+
+
+class DFA:
+
+    def __init__(self, states, alphabet, transition_function, start_state, accept_states, enfa):
+        self.alphabet = enfa.alphabet
+        self.start_state = enfa.eCloseDict[enfa.start_state[0]]
+
+    def display_details(self):
+        print("\n DFA: ")
+        print("Σ: ", set(self.alphabet))
+        print("q0: ", set(self.start_state))
 
 
 def replaceBrackets(str):
@@ -66,9 +78,9 @@ for idx, val in enumerate(temp):
 
 temp = new_lst
 states = temp[0]
-alphabet = {0, 1, 'e'}
-start_state = set(temp[1])
-accept_states = set(temp[2])
+alphabet = [0, 1, 'e']
+start_state = temp[1]
+accept_states = temp[2]
 
 tf = {}
 for i in range(3, len(states) + 3):
@@ -78,4 +90,7 @@ for i in range(3, len(states) + 3):
     tf[i - 3] = temp_dict
 
 E1 = eNFA(states, alphabet, tf, start_state, accept_states)
+D1 = DFA(states, alphabet, tf, start_state, accept_states, E1)
+
 E1.display_details()
+D1.display_details()
