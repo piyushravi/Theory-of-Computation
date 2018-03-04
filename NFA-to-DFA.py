@@ -42,7 +42,7 @@ class eNFA:
 
 class DFA:
 
-    def __init__(self, states, alphabet, transition_function, start_state, accept_states, enfa):
+    def __init__(self, enfa):
         self.alphabet = enfa.alphabet
         self.start_state = enfa.eCloseDict[enfa.start_state[0]]
 
@@ -90,7 +90,7 @@ for i in range(3, len(states) + 3):
     tf[i - 3] = temp_dict
 
 E1 = eNFA(states, alphabet, tf, start_state, accept_states)
-D1 = DFA(states, alphabet, tf, start_state, accept_states, E1)
+D1 = DFA(E1)
 
 E1.display_details()
 D1.display_details()
