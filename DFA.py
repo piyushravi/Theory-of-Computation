@@ -57,7 +57,7 @@ class DFA:
         else:
             print('The input {} is not in the language.'.format(inp))
 
-    def visualize(self):
+    def visualize(self, filename):
         plt.clf()
         G = nx.MultiDiGraph()
         states = self.Q.keys()
@@ -71,13 +71,13 @@ class DFA:
             label = x
             if self.Q[x].isInitial:
                 label += '\ninitial'
-                
+
             if self.Q[x].isFinal:
                 label += '\nfinal'
-            
+
             G.add_node(x, pos=(pos_x, pos_y), label = label)
-                
-            
+
+
 
             pos[x] = (pos_x, pos_y)
             if flag_x:
@@ -102,26 +102,26 @@ class DFA:
 
         # nx.drawing.nx_pydot.write_dot(G,'multi.dot')
         D = nx.drawing.nx_pydot.to_pydot(G, 'multi.dot')
-        
+
 #        for x in states:
-#            
+#
 #
 #            for a in self.alpha:
 #                y = self.delta(x, a)
 #                G.add_edge(x, y)
 #
 #                edge_labels[(x, y)] = a
-            
+
         png_str = D.create_png()
-        
+
         sio = StringIO() # file-like string, appropriate for imread below
         sio.write(png_str)
         sio.seek(0)
         plt.axis('off')
         img = mpimg.imread(sio)
         plt.imshow(img)
-        plt.savefig("toc_assgn3.4.png")
-        
+        plt.savefig(filename)
+
         # nx.draw_graphviz(G,prog='neato')
         # plt.plot()
 
@@ -193,4 +193,5 @@ if __name__ == "__main__":
     firstDFA = DFA(Q, initialState, alpha, matrixToDict(Q, alpha, delta), F)
     # inp = input("Please enter the input for the DFA:")
     # firstDFA.runDFA(inp)
-    firstDFA.visualize()
+    filename = os.path.dirname(os.path.abspath(__file__))+'/'+input("Enter filename for the figure (like example.png): ")
+    firstDFA.visualize(filename)
