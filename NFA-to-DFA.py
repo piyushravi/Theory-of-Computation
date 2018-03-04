@@ -43,13 +43,63 @@ class eNFA:
 class DFA:
 
     def __init__(self, enfa):
-        self.alphabet = enfa.alphabet
-        self.start_state = enfa.eCloseDict[enfa.start_state[0]]
+        self.enfa = enfa
+        self.alphabet = self.enfa.alphabet
+        self.start_state = self.enfa.eCloseDict[self.enfa.start_state[0]]
+        self.transition_function = {}
+        self.init_TF()
+        self.states = set(list(self.transition_function.keys()))
+        self.accept_states = self.getAcceptStates()
 
     def display_details(self):
         print("\n DFA: ")
         print("Σ: ", set(self.alphabet))
         print("q0: ", set(self.start_state))
+        print("δ: ")
+        pprint.pprint(self.transition_function)
+        print("Q: ", self.states)
+        print("F: ", set(self.accept_states))
+
+    def init_TF(self):
+
+        def cal_Transition(current_state, seen_states):
+            lst0 = []
+            lst1 = []
+            # transition value
+            for element in current_state:
+                if self.enfa.transition_function[element][0] != 'phi':
+                    lst0 = list(set(lst0 + list(self.enfa.transition_function[element][0])))
+                if self.enfa.transition_function[element][1] != 'phi':
+                    lst1 = list(set(lst1 + list(self.enfa.transition_function[element][1])))
+
+            lst = [lst0, lst1]
+
+            # eclose of transition values
+
+            for idx, val in enumerate(lst):
+                for idx_sub, val_sub in enumerate(val):
+                    lst[idx] = list(set(lst[idx] + list(self.enfa.eCloseDict[val_sub])))
+
+            if len(current_state) > 1:
+                self.transition_function[tuple(current_state)] = {0: lst[0], 1: lst[1]}
+            else:
+                self.transition_function[current_state[0]] = {0: lst[0], 1: lst[1]}
+
+            seen_states.append(current_state)
+
+            for sublst in lst:
+                if sublst not in seen_states:
+                    cal_Transition(sublst, seen_states)
+
+        cal_Transition(self.start_state, [])
+
+    def getAcceptStates(self):
+        tmp = []
+        for statelst in self.states:
+            for state in statelst:
+                if state in self.enfa.accept_states:
+                    tmp.append(statelst)
+        return tmp
 
 
 def replaceBrackets(str):
