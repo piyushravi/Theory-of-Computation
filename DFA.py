@@ -7,6 +7,7 @@ from cStringIO import StringIO
 class DFA:
     def __init__(self, Q, initialState, alpha, delta, F):
         self.setQ(Q)
+        self.initialState = initialState
         self.Q[initialState].isInitial = True
         self.alpha = alpha
         self.Delta = delta
