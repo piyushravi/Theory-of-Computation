@@ -9,6 +9,8 @@ class eNFA:
         self.start_state = start_state
         self.accept_states = accept_states
         self.current_state = start_state
+        self.eCloseDict = {}
+        self.getEClose()
 
     def display_details(self):
         print("Q: ", set(self.states))
@@ -17,6 +19,25 @@ class eNFA:
         print("F: ", self.accept_states)
         print("δ: ")
         pprint.pprint(self.transition_function)
+        print("EClose: ")
+        pprint.pprint(self.eCloseDict)
+
+    def getEClose(self):
+
+        def eClose(state):
+            if state in self.eCloseDict:
+                return self.eCloseDict[state]
+            e_close = []
+            e_close.append(state)
+            if self.transition_function[state]['e'] != 'phi':
+                for element in self.transition_function[state]['e']:
+                    e_close = e_close + eClose(element)
+            self.eCloseDict[state] = list(set(e_close))
+            return list(set(e_close))
+
+        for state in states:
+            if state not in self.eCloseDict:
+                self.eCloseDict[state] = eClose(state)
 
 
 def replaceBrackets(str):
@@ -24,7 +45,6 @@ def replaceBrackets(str):
     for element in str:
         if element.isdigit():
             lst.append(int(element))
-
     return set(lst)
 
 
