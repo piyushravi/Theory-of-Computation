@@ -45,6 +45,7 @@ class DFA:
     def __init__(self, enfa):
         self.enfa = enfa
         self.alphabet = self.enfa.alphabet
+        self.alphabet.remove('e')
         self.start_state = self.enfa.eCloseDict[self.enfa.start_state[0]]
         self.transition_function = {}
         self.init_TF()
