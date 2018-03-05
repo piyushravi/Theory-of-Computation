@@ -2,7 +2,10 @@ import os
 import networkx as nx
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
-from cStringIO import StringIO
+from io import BytesIO
+
+os.environ["PATH"] += os.pathsep + 'C:\\Users\\R\\Downloads\\graphviz-2.38\\release\\bin'
+
 
 class DFA:
     def __init__(self, Q, initialState, alpha, delta, F):
@@ -22,12 +25,10 @@ class DFA:
         for x in F:
             self.Q[x].setFinal()
 
-
     def delta(self, state, alpha):
         return self.Delta[(state, alpha)]
 
-
-    def runDFA(self, inp = ''):
+    def runDFA(self, inp=''):
         presState = self.initialState
 
         for x in inp:
@@ -40,15 +41,14 @@ class DFA:
         else:
             print('The input {} is not in the language.'.format(inp))
 
-
-
-    def simulateDFA(self, inp = ''):
-        print ('The input to the machine is {}.'.format(inp))
-        print ('The machine starts at state {}.'.format(self.initialState))
+    def simulateDFA(self, inp=''):
+        print('The input to the machine is {}.'.format(inp))
+        print('The machine starts at state {}.'.format(self.initialState))
         presState = self.initialState
 
         for x in inp:
-            print('The machine reads input \'{}\' and goes from state {} to {}.'.format(x, presState, self.delta(presState, x)))
+            print('The machine reads input \'{}\' and goes from state {} to {}.'.format(x, presState,
+                                                                                        self.delta(presState, x)))
             presState = self.delta(presState, x)
 
         isFinal = self.Q[presState].getFinal()
@@ -63,7 +63,7 @@ class DFA:
         G = nx.MultiDiGraph()
         states = self.Q.keys()
 
-        pos_x , pos_y = 1, 0
+        pos_x, pos_y = 1, 0
         pos = {}
         node_labels = {}
         edge_labels = {}
@@ -76,9 +76,7 @@ class DFA:
             if self.Q[x].isFinal:
                 label += '\nfinal'
 
-            G.add_node(x, pos=(pos_x, pos_y), label = label)
-
-
+            G.add_node(x, pos=(pos_x, pos_y), label=label)
 
             pos[x] = (pos_x, pos_y)
             if flag_x:
@@ -97,25 +95,25 @@ class DFA:
 
             for a in self.alpha:
                 y = self.delta(x, a)
-                G.add_edge(x, y, label = a)
+                G.add_edge(x, y, label=a)
 
                 edge_labels[(x, y)] = a
 
         # nx.drawing.nx_pydot.write_dot(G,'multi.dot')
         D = nx.drawing.nx_pydot.to_pydot(G, 'multi.dot')
 
-#        for x in states:
-#
-#
-#            for a in self.alpha:
-#                y = self.delta(x, a)
-#                G.add_edge(x, y)
-#
-#                edge_labels[(x, y)] = a
+        #        for x in states:
+        #
+        #
+        #            for a in self.alpha:
+        #                y = self.delta(x, a)
+        #                G.add_edge(x, y)
+        #
+        #                edge_labels[(x, y)] = a
 
         png_str = D.create_png()
 
-        sio = StringIO() # file-like string, appropriate for imread below
+        sio = BytesIO()  # file-like string, appropriate for imread below
         sio.write(png_str)
         sio.seek(0)
         plt.axis('off')
@@ -127,24 +125,23 @@ class DFA:
         # plt.plot()
 
     def union(self, DFA):
-        #to be implemented
+        # to be implemented
 
         return 0
 
 
-
-
-
 class State:
-    def __init__(self, name, isInitial = False, isFinal = False):
+    def __init__(self, name, isInitial=False, isFinal=False):
         self.name = name
         self.isFinal = isFinal
         self.isInitial = isInitial
-    def setFinal(self, isFinal = True):
+
+    def setFinal(self, isFinal=True):
         self.isFinal = isFinal
 
     def getFinal(self):
         return self.isFinal
+
 
 def matrixToDict(state, alpha, matrix):
     res = {}
@@ -155,25 +152,30 @@ def matrixToDict(state, alpha, matrix):
 
     return res
 
+
 def getStates():
-    print ('Please input the state(s) for the DFA separated by spaces.')
+    print('Please input the state(s) for the DFA separated by spaces.')
     return input().split()
 
+
 def getInitialState():
-    print ('Please input the initial state for the DFA.')
+    print('Please input the initial state for the DFA.')
     return input()
 
 
 def getFinalStates():
-    print ('Please input the final state(s) for the DFA separated by spaces.')
+    print('Please input the final state(s) for the DFA separated by spaces.')
     return input().split()
 
+
 def getAlpha():
-    print ('Pleas input the alphabets for the DFA separated by spaces.')
+    print('Pleas input the alphabets for the DFA separated by spaces.')
     return ''.join(input().split())
 
+
 def getTransistionFunction(n):
-    print ('Please input |states|*|alphabets| matrix for the transistion function separated by spaces and new line for each state.')
+    print(
+        'Please input |states|*|alphabets| matrix for the transistion function separated by spaces and new line for each state.')
 
     res = []
     for _ in range(n):
@@ -182,9 +184,7 @@ def getTransistionFunction(n):
     return res
 
 
-
 if __name__ == "__main__":
-
     Q = ['q0', 'q1', 'q2']
     initialState = 'q0'
     alpha = '01'
@@ -194,5 +194,6 @@ if __name__ == "__main__":
     firstDFA = DFA(Q, initialState, alpha, matrixToDict(Q, alpha, delta), F)
     # inp = input("Please enter the input for the DFA:")
     # firstDFA.runDFA(inp)
-    filename = os.path.dirname(os.path.abspath(__file__))+'/'+input("Enter filename for the figure (like example.png): ")
+    filename = os.path.dirname(os.path.abspath(__file__)) + '/' + input(
+        "Enter filename for the figure (like example.png): ")
     firstDFA.visualize(filename)

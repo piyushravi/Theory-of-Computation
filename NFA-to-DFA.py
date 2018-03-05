@@ -49,7 +49,7 @@ class DFA:
         self.start_state = self.enfa.eCloseDict[self.enfa.start_state[0]]
         self.transition_function = {}
         self.init_TF()
-        self.states = set(list(self.transition_function.keys()))
+        self.states = list(set(list(self.transition_function.keys())))
         self.accept_states = self.getAcceptStates()
 
     def display_details(self):
@@ -58,7 +58,7 @@ class DFA:
         print("q0: ", set(self.start_state))
         print("δ: ")
         pprint.pprint(self.transition_function)
-        print("Q: ", self.states)
+        print("Q: ", set(self.states))
         print("F: ", set(self.accept_states))
 
     def init_TF(self):
@@ -101,6 +101,41 @@ class DFA:
                 if state in self.enfa.accept_states:
                     tmp.append(statelst)
         return tmp
+
+    def writeToFile(self):
+        txt = ""
+
+        for k, v in self.transition_function.items():
+            txt += ','.join(str(e) for e in list(k))
+            txt += " "
+
+        txt += "\n"
+
+        txt += ','.join(str(e) for e in self.start_state)
+        txt += "\n"
+
+        for state in self.accept_states:
+            txt += ','.join(str(e) for e in list(state))
+            txt += " "
+
+        txt += "\n"
+
+        for k, v in self.transition_function.items():
+            txt += ','.join(str(e) for e in v[0])
+            txt += " "
+            txt += ','.join(str(e) for e in v[1])
+            txt += "\n"
+
+        tmp = list(txt)
+
+        for idx, val in enumerate(tmp):
+            if val.isdigit():
+                tmp[idx] = "q" + str(val)
+
+        txt = ("".join(tmp))
+
+        with open('DFA.txt', 'w') as the_file:
+            the_file.write(txt)
 
 
 def replaceBrackets(str):
@@ -145,3 +180,4 @@ D1 = DFA(E1)
 
 E1.display_details()
 D1.display_details()
+D1.writeToFile()
