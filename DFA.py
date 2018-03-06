@@ -102,7 +102,7 @@ class DFA:
                 print(x, a, y, edge_labels)
                 try:
                     if not a in edge_labels[(x, y)]:
-                        edge_labels[(x, y)] +=a
+                        edge_labels[(x, y)] +=' '+a
                 except:
                     edge_labels[(x,y)] = a
 
@@ -122,10 +122,7 @@ class DFA:
         #
         #                edge_labels[(x, y)] = a
 
-        try:
-            png_str = D.create_png()
-        except:
-            png_str = D.create_png()
+        png_str = D.create_png()
 
         sio = BytesIO()  # file-like string, appropriate for imread below
         sio.write(png_str)
