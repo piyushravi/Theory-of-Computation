@@ -6,9 +6,11 @@ from io import BytesIO
 from DFA import State, DFA
 
 
+
 class eNFA:
     def __init__(self, Q, initialState, alpha, Delta, F):
         self.setQ(Q)
+        self.numStates = len(Q)
         self.initialState = initialState
         # print (self.initialState)
         self.setInitial(self.initialState)
@@ -55,7 +57,7 @@ class eNFA:
 
         for x in presState:
             # print (2, presState, x)
-            temp = self.delta(x, 'e')
+            # temp = self.delta(x, 'e')
             # print (3, temp)
             for y in self.delta(x, 'e'):
                 # print (4, y)
@@ -68,8 +70,12 @@ class eNFA:
             nextState = []
             for y in presState:
                 nextState = list(set(list(nextState + self.delta(y, a))))
+
             for y in nextState:
-                nextState = list(set(list(nextState + self.ECLOSE(y))))
+
+                for state in self.ECLOSE(y):
+                    if not state in nextState:
+                        nextState.append(state)
             presState = nextState
 
 
@@ -181,8 +187,16 @@ def convertToDFA(eNFA):
 
     return DFA(Q, initialState, alpha, delta, F)
 
+
+
+
+
 if __name__ == "__main__":
     filename = input("Enter the input filename of the NFA: ")
     nfa = read_eNFA(filename)
+
     inp = input("Enter the string input for the NFA: ")
     print(nfa.run_eNFA(inp))
+
+    dfa = convertToDFA(nfa)
+    dfa.visualize('test4.png')
