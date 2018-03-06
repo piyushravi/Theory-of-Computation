@@ -24,20 +24,22 @@ class eNFA:
 
     def getEClose(self):
 
-        def eClose(state):
+        def eClose(state, seen):
             if state in self.eCloseDict:
                 return self.eCloseDict[state]
             e_close = []
             e_close.append(state)
-            if self.transition_function[state]['e'] != 'phi':
-                for element in self.transition_function[state]['e']:
-                    e_close = e_close + eClose(element)
+            if state not in seen:
+                if self.transition_function[state]['e'] != 'phi':
+                    for element in self.transition_function[state]['e']:
+                        seen.append(state)
+                        e_close = e_close + eClose(element, seen)
             self.eCloseDict[state] = list(set(e_close))
             return list(set(e_close))
 
         for state in states:
             if state not in self.eCloseDict:
-                self.eCloseDict[state] = eClose(state)
+                self.eCloseDict[state] = eClose(state, [])
 
 
 class DFA:
@@ -66,6 +68,7 @@ class DFA:
         def cal_Transition(current_state, seen_states):
             lst0 = []
             lst1 = []
+
             # transition value
             for element in current_state:
                 if self.enfa.transition_function[element][0] != 'phi':
@@ -176,8 +179,8 @@ for i in range(3, len(states) + 3):
     tf[i - 3] = temp_dict
 
 E1 = eNFA(states, alphabet, tf, start_state, accept_states)
+E1.display_details()
 D1 = DFA(E1)
 
-E1.display_details()
-D1.display_details()
-D1.writeToFile()
+# D1.display_details()
+# D1.writeToFile()
