@@ -172,6 +172,31 @@ def getAlpha():
     print('Pleas input the alphabets for the DFA separated by spaces.')
     return ''.join(input().split())
 
+def readDFA(self, filename):
+    filename = os.path.dirname(os.path.abspath(__file__))+'/'+filename
+    fileLineCtr = 0
+    alpha = '01'
+    f = file.open(filename, 'r')
+    Delta = {}
+    for line in f.readlines():
+        if fileLineCtr == 0:
+            Q = line.split()
+
+        elif fileLineCtr == 1:
+            initialState = line
+
+        elif fileLineCtr == 2:
+            F = line.split()
+
+        elif fileLineCtr > 2:
+            transistionsFromq = line.split()
+
+            Delta[ (Q[fileLineCtr-3], '0') ], Delta[ (Q[fileLineCtr-3], '1') ] = transistionsFromq
+
+        fileLineCtr+=1
+    
+    f.close()
+    return DFA(Q, initialState, alpha, Delta, F)
 
 def getTransistionFunction(n):
     print(
