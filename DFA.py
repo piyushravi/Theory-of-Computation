@@ -1,21 +1,20 @@
 import os
-from io import BytesIO
-
-import matplotlib.image as mpimg
-import matplotlib.pyplot as plt
 import networkx as nx
-
-os.environ["PATH"] += os.pathsep + 'C:\\Users\\R\\Downloads\\graphviz-2.38\\release\\bin'
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+from io import BytesIO
 
 
 class DFA:
     def __init__(self, Q, initialState, alpha, delta, F):
         self.setQ(Q)
-        self.initialState = initialState
         self.Q[initialState].isInitial = True
         self.alpha = alpha
         self.Delta = delta
         self.setF(F)
+        self.F = F
+
+
 
     def setQ(self, Q):
         self.Q = {}
@@ -26,10 +25,12 @@ class DFA:
         for x in F:
             self.Q[x].setFinal()
 
+
     def delta(self, state, alpha):
         return self.Delta[(state, alpha)]
 
-    def runDFA(self, inp=''):
+
+    def runDFA(self, inp = ''):
         presState = self.initialState
 
         for x in inp:
@@ -42,14 +43,15 @@ class DFA:
         else:
             print('The input {} is not in the language.'.format(inp))
 
-    def simulateDFA(self, inp=''):
-        print('The input to the machine is {}.'.format(inp))
-        print('The machine starts at state {}.'.format(self.initialState))
+
+
+    def simulateDFA(self, inp = ''):
+        print ('The input to the machine is {}.'.format(inp))
+        print ('The machine starts at state {}.'.format(self.initialState))
         presState = self.initialState
 
         for x in inp:
-            print('The machine reads input \'{}\' and goes from state {} to {}.'.format(x, presState,
-                                                                                        self.delta(presState, x)))
+            print('The machine reads input \'{}\' and goes from state {} to {}.'.format(x, presState, self.delta(presState, x)))
             presState = self.delta(presState, x)
 
         isFinal = self.Q[presState].getFinal()
@@ -122,7 +124,10 @@ class DFA:
         #
         #                edge_labels[(x, y)] = a
 
-        png_str = D.create_png()
+        try:
+            png_str = D.create_png()
+        except:
+            png_str = D.create_png()
 
         sio = BytesIO()  # file-like string, appropriate for imread below
         sio.write(png_str)
@@ -134,24 +139,26 @@ class DFA:
 
         # nx.draw_graphviz(G,prog='neato')
         # plt.plot()
+
     def union(self, DFA):
-        # to be implemented
+        #to be implemented
 
         return 0
 
 
+
+
+
 class State:
-    def __init__(self, name, isInitial=False, isFinal=False):
+    def __init__(self, name, isInitial = False, isFinal = False):
         self.name = name
         self.isFinal = isFinal
         self.isInitial = isInitial
-
-    def setFinal(self, isFinal=True):
+    def setFinal(self, isFinal = True):
         self.isFinal = isFinal
 
     def getFinal(self):
         return self.isFinal
-
 
 def matrixToDict(state, alpha, matrix):
     res = {}
@@ -162,32 +169,37 @@ def matrixToDict(state, alpha, matrix):
 
     return res
 
-
 def getStates():
-    print('Please input the state(s) for the DFA separated by spaces.')
+    print ('Please input the state(s) for the DFA separated by spaces.')
     return input().split()
 
-
 def getInitialState():
-    print('Please input the initial state for the DFA.')
+    print ('Please input the initial state for the DFA.')
     return input()
 
 
 def getFinalStates():
-    print('Please input the final state(s) for the DFA separated by spaces.')
+    print ('Please input the final state(s) for the DFA separated by spaces.')
     return input().split()
 
-
 def getAlpha():
-    print('Pleas input the alphabets for the DFA separated by spaces.')
+    print ('Pleas input the alphabets for the DFA separated by spaces.')
     return ''.join(input().split())
 
+def getTransistionFunction(n):
+    print ('Please input |states|*|alphabets| matrix for the transistion function separated by spaces and new line for each state.')
+
+    res = []
+    for _ in range(n):
+        res.append(list(map(int, input().split())))
+
+    return res
 
 def readDFA(self, filename):
-    filename = os.path.dirname(os.path.abspath(__file__)) + '/' + filename
+    filename = os.path.dirname(os.path.abspath(__file__))+'/'+filename
     fileLineCtr = 0
     alpha = '01'
-    f = file.open(filename, 'r')
+    f = open(filename, 'r')
     Delta = {}
     for line in f.readlines():
         if fileLineCtr == 0:
@@ -202,86 +214,26 @@ def readDFA(self, filename):
         elif fileLineCtr > 2:
             transistionsFromq = line.split()
 
-            Delta[(Q[fileLineCtr - 3], '0')], Delta[(Q[fileLineCtr - 3], '1')] = transistionsFromq
+            Delta[ (Q[fileLineCtr-3], '0') ], Delta[ (Q[fileLineCtr-3], '1') ] = transistionsFromq
 
-        fileLineCtr += 1
+        fileLineCtr+=1
 
-    f.close()
     return DFA(Q, initialState, alpha, Delta, F)
 
 
-def getTransistionFunction(n):
-    print(
-        'Please input |states|*|alphabets| matrix for the transistion function separated by spaces and new line for each state.')
 
-    res = []
-    for _ in range(n):
-        res.append(list(map(int, input().split())))
-
-    return res
 
 
 if __name__ == "__main__":
-    """   DFA:
-    Σ: {0, 1}
-    q0: {0}
-    δ:
-    {0: {0: [1, 2, 3], 1: [1, 2, 3]},
-     'phi': {0: 'phi', 1: 'phi'},
-     [0, 1, 2, 3]: {0: [0, 1, 2, 3], 1: [1, 2, 3]},
-     [1, 2, 3]: {0: [0, 1, 2, 3], 1: [1, 2, 3]}}
-    Q: {0, [1, 2, 3], 'phi', [0, 1, 2, 3]}
-    F: {[1, 2, 3], [0, 1, 2, 3]}
-       """
 
-    with open("Output_DFA") as f:
-        temp = f.readlines()
-        # remove null character
-    temp = [x.strip() for x in temp]
-
-    new_lst = []
-
-
-    def replaceBrackets(str):
-        lst = []
-        for element in str:
-            if element.isdigit():
-                lst.append(int(element))
-        return list(lst)
-
-
-    for idx, val in enumerate(temp):
-        temp[idx] = temp[idx].replace('q', '')
-        lst = temp[idx].split()
-        for idx, val in enumerate(lst):
-            if ',' in val:
-                lst[idx] = replaceBrackets(val)
-            if len(val) == 1:
-                lst[idx] = int(val)
-        new_lst.append(lst)
-
-    temp = new_lst
-
-    states = temp[0]
-    alphabet = [0, 1]
-    start_state = temp[1]
-    accept_states = temp[2]
-
-    dict = {}
-
-    for i in range(0, len(states)):
-        dict[i] = states[i]
-
-    Q = (list(map(str, states)))
-    F = (list(map(str, accept_states)))
-
-    Q = (list(map(str, states)))
-    initialState = '0'
+    Q = ['q0', 'q1', 'q2']
+    initialState = 'q0'
     alpha = '01'
-
-    delta = [[0, 0], [1, 1], [3, 2], [3, 2]]
+    delta = [[1, 0], [0, 2], [2, 1]]
+    F = ['q1']
 
     firstDFA = DFA(Q, initialState, alpha, matrixToDict(Q, alpha, delta), F)
-filename = os.path.dirname(os.path.abspath(__file__)) + '/' + input(
-    "Enter filename for the figure (like example.png): ")
-firstDFA.visualize(filename)
+    # inp = input("Please enter the input for the DFA:")
+    # firstDFA.runDFA(inp)
+    filename = os.path.dirname(os.path.abspath(__file__))+'/'+input("Enter filename for the figure (like example.png): ")
+    firstDFA.visualize(filename)
