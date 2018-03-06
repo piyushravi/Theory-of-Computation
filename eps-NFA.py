@@ -120,6 +120,67 @@ def read_eNFA(filename):
     Q.append('phi')
     return eNFA(Q, initialState, alpha, Delta, F)
 
+def convertToDFA(eNFA):
+
+    Q = []
+    Qd = []
+    initialState = eNFA.initialState
+    for y in initialState:
+
+        for state in eNFA.ECLOSE(y):
+            if not state in initialState:
+                initialState.append(state)
+
+
+    initialState.sort()
+    ctr = 0
+    Q.append(tuple(initialState))
+    # print ('s', initialState)
+    initialState = tuple(initialState)
+    alpha = '01'
+    delta = {}
+    for stateQ in Q:
+        # print('s', stateQ)
+        adder = []
+        for a in alpha:
+            nextState = []
+            for y in stateQ:
+                # print ('y', y, stateQ)
+                nextState = list(set(nextState + eNFA.delta(y, a)))
+
+            for y in nextState:
+
+                for state in eNFA.ECLOSE(y):
+                    if not state in nextState:
+                        nextState.append(state)
+
+            nextState.sort()
+            # print ('n', nextState)
+
+            if not tuple(nextState) in Q:
+
+                adder.append(tuple(nextState))
+            delta[(stateQ, a)] = tuple(nextState)
+
+            # print ('d', delta[(stateQ, a)])
+        ctr+=1
+        # print( 'a', adder)
+        Q += adder
+    F = []
+
+    for state in Q:
+        for y in state:
+            if eNFA.Q[y].isFinal:
+                F.append(state)
+                break
+
+
+    # print ('Q', Q)
+    # print ('initialState', initialState)
+    # print ('F', F)
+
+    return DFA(Q, initialState, alpha, delta, F)
+
 if __name__ == "__main__":
     filename = input("Enter the input filename of the NFA: ")
     nfa = read_eNFA(filename)
