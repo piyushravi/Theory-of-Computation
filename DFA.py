@@ -70,7 +70,7 @@ class DFA:
         edge_labels = {}
         flag_x, flag_y = False, True
         for x in states:
-            label = x
+            label = str(x)
             if self.Q[x].isInitial:
                 label += '\ninitial'
 
@@ -94,11 +94,21 @@ class DFA:
 
             node_labels[x] = x
 
+        for x in states:
+
             for a in self.alpha:
                 y = self.delta(x, a)
-                G.add_edge(x, y, label=a)
+                # G.add_edge(x, y, label = a)
+                print(x, a, y, edge_labels)
+                try:
+                    if not a in edge_labels[(x, y)]:
+                        edge_labels[(x, y)] +=' '+a
+                except:
+                    edge_labels[(x,y)] = a
 
-                edge_labels[(x, y)] = a
+
+        for x in edge_labels.keys():
+            G.add_edge(x[0], x[1], label = edge_labels[x])
 
         # nx.drawing.nx_pydot.write_dot(G,'multi.dot')
         D = nx.drawing.nx_pydot.to_pydot(G, 'multi.dot')
@@ -124,7 +134,6 @@ class DFA:
 
         # nx.draw_graphviz(G,prog='neato')
         # plt.plot()
-
     def union(self, DFA):
         # to be implemented
 
