@@ -69,12 +69,9 @@ class DFA:
         def cal_Transition(current_state, seen_states):
             lst0 = []
             lst1 = []
-            print("\n")
-            # print("current_state", current_state)
 
             # transition value
             for element in current_state:
-                # print("element", element)
                 if self.enfa.transition_function[element][0] != 'phi':
                     lst0 = list(set(lst0 + list(self.enfa.transition_function[element][0])))
                 if self.enfa.transition_function[element][1] != 'phi':
@@ -83,11 +80,8 @@ class DFA:
             lst = [lst0, lst1]
 
             for idx, val in enumerate(lst):
-                # print(val)
                 if val == []:
                     lst[idx] = ['phi']
-
-            # print(lst)
 
             # eclose of transition values
 
@@ -100,8 +94,6 @@ class DFA:
                 self.transition_function[tuple(current_state)] = {0: lst[0], 1: lst[1]}
             else:
                 self.transition_function[current_state[0]] = {0: lst[0], 1: lst[1]}
-
-            # print("TF", self.transition_function)
 
             seen_states.append(current_state)
 
@@ -128,7 +120,7 @@ class DFA:
         txt = ""
 
         for k, v in self.transition_function.items():
-            if len(str(k)) == 1 :
+            if len(str(k)) == 1:
                 txt += str(k)
             elif k == 'phi':
                 txt += k
@@ -148,9 +140,12 @@ class DFA:
         txt += "\n"
 
         for k, v in self.transition_function.items():
-            txt += ','.join(str(e) for e in v[0])
-            txt += " "
-            txt += ','.join(str(e) for e in v[1])
+            if k == 'phi':
+                txt += 'phi' + " " + 'phi'
+            else:
+                txt += ','.join(str(e) for e in v[0])
+                txt += " "
+                txt += ','.join(str(e) for e in v[1])
             txt += "\n"
 
         tmp = list(txt)
