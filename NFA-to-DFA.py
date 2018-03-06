@@ -50,6 +50,7 @@ class DFA:
         self.alphabet.remove('e')
         self.start_state = self.enfa.eCloseDict[self.enfa.start_state[0]]
         self.transition_function = {}
+        self.transition_function['phi'] = {0: 'phi', 1: 'phi'}
         self.init_TF()
         self.states = list(set(list(self.transition_function.keys())))
         self.accept_states = self.getAcceptStates()
@@ -68,9 +69,12 @@ class DFA:
         def cal_Transition(current_state, seen_states):
             lst0 = []
             lst1 = []
+            print("\n")
+            # print("current_state", current_state)
 
             # transition value
             for element in current_state:
+                # print("element", element)
                 if self.enfa.transition_function[element][0] != 'phi':
                     lst0 = list(set(lst0 + list(self.enfa.transition_function[element][0])))
                 if self.enfa.transition_function[element][1] != 'phi':
@@ -78,21 +82,31 @@ class DFA:
 
             lst = [lst0, lst1]
 
+            for idx, val in enumerate(lst):
+                # print(val)
+                if val == []:
+                    lst[idx] = ['phi']
+
+            # print(lst)
+
             # eclose of transition values
 
             for idx, val in enumerate(lst):
-                for idx_sub, val_sub in enumerate(val):
-                    lst[idx] = list(set(lst[idx] + list(self.enfa.eCloseDict[val_sub])))
+                if 'phi' not in val:
+                    for idx_sub, val_sub in enumerate(val):
+                        lst[idx] = list(set(lst[idx] + list(self.enfa.eCloseDict[val_sub])))
 
             if len(current_state) > 1:
                 self.transition_function[tuple(current_state)] = {0: lst[0], 1: lst[1]}
             else:
                 self.transition_function[current_state[0]] = {0: lst[0], 1: lst[1]}
 
+            # print("TF", self.transition_function)
+
             seen_states.append(current_state)
 
             for sublst in lst:
-                if sublst not in seen_states:
+                if sublst not in seen_states and sublst != ['phi']:
                     cal_Transition(sublst, seen_states)
 
         cal_Transition(self.start_state, [])
@@ -100,16 +114,26 @@ class DFA:
     def getAcceptStates(self):
         tmp = []
         for statelst in self.states:
-            for state in statelst:
-                if state in self.enfa.accept_states:
-                    tmp.append(statelst)
+            if statelst != 'phi':
+                if len(str(statelst)) != 1:
+                    for state in statelst:
+                        if state in self.enfa.accept_states:
+                            tmp.append(statelst)
+                else:
+                    if statelst in self.enfa.accept_states:
+                        tmp.append(statelst)
         return tmp
 
     def writeToFile(self):
         txt = ""
 
         for k, v in self.transition_function.items():
-            txt += ','.join(str(e) for e in list(k))
+            if len(str(k)) == 1 :
+                txt += str(k)
+            elif k == 'phi':
+                txt += k
+            else:
+                txt += ','.join(str(e) for e in list(k))
             txt += " "
 
         txt += "\n"
@@ -137,7 +161,7 @@ class DFA:
 
         txt = ("".join(tmp))
 
-        with open('DFA.txt', 'w') as the_file:
+        with open('Output_DFA', 'w') as the_file:
             the_file.write(txt)
 
 
@@ -182,5 +206,5 @@ E1 = eNFA(states, alphabet, tf, start_state, accept_states)
 E1.display_details()
 D1 = DFA(E1)
 
-# D1.display_details()
-# D1.writeToFile()
+D1.display_details()
+D1.writeToFile()
