@@ -1,8 +1,9 @@
 import os
-import networkx as nx
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
 from io import BytesIO
+
+import matplotlib.image as mpimg
+import matplotlib.pyplot as plt
+import networkx as nx
 
 os.environ["PATH"] += os.pathsep + 'C:\\Users\\R\\Downloads\\graphviz-2.38\\release\\bin'
 
@@ -172,8 +173,9 @@ def getAlpha():
     print('Pleas input the alphabets for the DFA separated by spaces.')
     return ''.join(input().split())
 
+
 def readDFA(self, filename):
-    filename = os.path.dirname(os.path.abspath(__file__))+'/'+filename
+    filename = os.path.dirname(os.path.abspath(__file__)) + '/' + filename
     fileLineCtr = 0
     alpha = '01'
     f = file.open(filename, 'r')
@@ -191,12 +193,13 @@ def readDFA(self, filename):
         elif fileLineCtr > 2:
             transistionsFromq = line.split()
 
-            Delta[ (Q[fileLineCtr-3], '0') ], Delta[ (Q[fileLineCtr-3], '1') ] = transistionsFromq
+            Delta[(Q[fileLineCtr - 3], '0')], Delta[(Q[fileLineCtr - 3], '1')] = transistionsFromq
 
-        fileLineCtr+=1
-    
+        fileLineCtr += 1
+
     f.close()
     return DFA(Q, initialState, alpha, Delta, F)
+
 
 def getTransistionFunction(n):
     print(
@@ -210,15 +213,66 @@ def getTransistionFunction(n):
 
 
 if __name__ == "__main__":
-    Q = ['q0', 'q1', 'q2']
-    initialState = 'q0'
+    """   DFA:
+    Σ: {0, 1}
+    q0: {0}
+    δ:
+    {0: {0: [1, 2, 3], 1: [1, 2, 3]},
+     'phi': {0: 'phi', 1: 'phi'},
+     [0, 1, 2, 3]: {0: [0, 1, 2, 3], 1: [1, 2, 3]},
+     [1, 2, 3]: {0: [0, 1, 2, 3], 1: [1, 2, 3]}}
+    Q: {0, [1, 2, 3], 'phi', [0, 1, 2, 3]}
+    F: {[1, 2, 3], [0, 1, 2, 3]}
+       """
+
+    with open("Output_DFA") as f:
+        temp = f.readlines()
+        # remove null character
+    temp = [x.strip() for x in temp]
+
+    new_lst = []
+
+
+    def replaceBrackets(str):
+        lst = []
+        for element in str:
+            if element.isdigit():
+                lst.append(int(element))
+        return list(lst)
+
+
+    for idx, val in enumerate(temp):
+        temp[idx] = temp[idx].replace('q', '')
+        lst = temp[idx].split()
+        for idx, val in enumerate(lst):
+            if ',' in val:
+                lst[idx] = replaceBrackets(val)
+            if len(val) == 1:
+                lst[idx] = int(val)
+        new_lst.append(lst)
+
+    temp = new_lst
+
+    states = temp[0]
+    alphabet = [0, 1]
+    start_state = temp[1]
+    accept_states = temp[2]
+
+    dict = {}
+
+    for i in range(0, len(states)):
+        dict[i] = states[i]
+
+    Q = (list(map(str, states)))
+    F = (list(map(str, accept_states)))
+
+    Q = (list(map(str, states)))
+    initialState = '0'
     alpha = '01'
-    delta = [[1, 0], [0, 2], [2, 1]]
-    F = ['q1']
+
+    delta = [[0, 0], [1, 1], [3, 2], [3, 2]]
 
     firstDFA = DFA(Q, initialState, alpha, matrixToDict(Q, alpha, delta), F)
-    # inp = input("Please enter the input for the DFA:")
-    # firstDFA.runDFA(inp)
-    filename = os.path.dirname(os.path.abspath(__file__)) + '/' + input(
-        "Enter filename for the figure (like example.png): ")
-    firstDFA.visualize(filename)
+filename = os.path.dirname(os.path.abspath(__file__)) + '/' + input(
+    "Enter filename for the figure (like example.png): ")
+firstDFA.visualize(filename)
