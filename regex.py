@@ -9,7 +9,7 @@ regex = content[1]
 class NFA:
     """class to represent an NFA"""
 
-    def __init__(self, language):
+    def __init__(self, language={'0', '1'}):
         self.states = set()
         self.startstate = None
         self.finalstates = []
@@ -78,6 +78,79 @@ class NFA:
             for state in tostates:
                 for char in tostates[state]:
                     print("  ", fromstate, "->", state, "on '" + char + "'")
+
+    def newBuildFromNumber(self, startnum):
+        translations = {}
+        for i in list(self.states):
+            translations[i] = startnum
+            startnum += 1
+        rebuild = NFA(self.language)
+        rebuild.setstartstate(translations[self.startstate])
+        rebuild.addfinalstates(translations[self.finalstates[0]])
+        for fromstate, tostates in self.transitions.items():
+            for state in tostates:
+                rebuild.addtransition(translations[fromstate], translations[state], tostates[state])
+        return [rebuild, startnum]
+
+
+class BuildNFA:
+    """class for building e-nfa basic structures"""
+
+    @staticmethod
+    def basic_struct(inp):
+        state1 = 1
+        state2 = 2
+        basic = NFA()
+        basic.setstartstate(state1)
+        basic.addfinalstates([state2])
+        basic.addtransition(1, 2, inp)
+        return basic
+
+    @staticmethod
+    def plus_struct(a, b):
+        [a, m1] = a.newBuildFromNumber(2)
+        [b, m2] = b.newBuildFromNumber(m1)
+        state1 = 1
+        state2 = m2
+        plus = NFA()
+        plus.setstartstate(state1)
+        plus.addfinalstates(state2)
+        plus.addtransition(plus.startstate, a.startstate, plus.epsilon)
+        plus.addtransition(plus.startstate, b.startstate, plus.epsilon)
+        plus.addtransition(a.finalstates[0], plus.finalstates[0], plus.epsilon)
+        plus.addtransition(b.finalstates[0], plus.finalstates[0], plus.epsilon)
+        plus.addtransition_dict(a.transitions)
+        plus.addtransition_dict(b.transitions)
+        return plus
+
+    @staticmethod
+    def dot_struct(a, b):
+        [a, m1] = a.newBuildFromNumber(1)
+        [b, m2] = b.newBuildFromNumber(m1)
+        state1 = 1
+        state2 = m2 - 1
+        dot = NFA()
+        dot.setstartstate(state1)
+        dot.addfinalstates(state2)
+        dot.addtransition(a.finalstates[0], b.startstate, dot.epsilon)
+        dot.addtransition_dict(a.transitions)
+        dot.addtransition_dict(b.transitions)
+        return dot
+
+    @staticmethod
+    def star_struct(a):
+        [a, m1] = a.newBuildFromNumber(2)
+        state1 = 1
+        state2 = m1
+        star = NFA()
+        star.setstartstate(state1)
+        star.addfinalstates(state2)
+        star.addtransition(star.startstate, a.startstate, star.epsilon)
+        star.addtransition(star.startstate, star.finalstates[0], star.epsilon)
+        star.addtransition(a.finalstates[0], star.finalstates[0], star.epsilon)
+        star.addtransition(a.finalstates[0], a.startstate, star.epsilon)
+        star.addtransition_dict(a.transitions)
+        return star
 
 
 class Regex:
