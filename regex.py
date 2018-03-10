@@ -93,7 +93,26 @@ class NFA:
         return [rebuild, startnum]
 
     def run_eNFA(self, input):
-        pass
+        current_states = [self.startstate]
+        for k, v in self.transitions[self.startstate].items():
+            current_states.append(k)
+        current_states = list(set(current_states))
+
+        for char in input:
+            nextState = []
+            for state in current_states:
+                if state in self.transitions:
+                    for k, v in self.transitions[state].items():
+                        if ''.join(v) == char:
+                            nextState = list(set(nextState + list(self.getEClose(k))))
+
+            current_states = nextState
+
+        for y in current_states:
+            if y in self.finalstates:
+                return "Yes"
+
+        return "No"
 
 
 class BuildNFA:
@@ -168,7 +187,7 @@ class Regex:
         self.alphabet = alphabet
         self.buildNFA()
         self.display_details()
-        self.nfa.run_eNFA(input)
+        print("\n", self.nfa.run_eNFA(input))
 
     def display_details(self):
         print("\nRegex: ")
