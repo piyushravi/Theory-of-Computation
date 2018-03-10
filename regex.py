@@ -92,6 +92,9 @@ class NFA:
                 rebuild.addtransition(translations[fromstate], translations[state], tostates[state])
         return [rebuild, startnum]
 
+    def run_eNFA(self, input):
+        pass
+
 
 class BuildNFA:
     """class for building e-nfa basic structures"""
@@ -154,7 +157,7 @@ class BuildNFA:
 
 
 class Regex:
-    def __init__(self, regex, alphabet):
+    def __init__(self, regex, alphabet, input):
         self.star = '*'
         self.plus = '+'
         self.dot = '.'
@@ -164,6 +167,8 @@ class Regex:
         self.regex = regex
         self.alphabet = alphabet
         self.buildNFA()
+        self.display_details()
+        self.nfa.run_eNFA(input)
 
     def display_details(self):
         print("\nRegex: ")
@@ -256,5 +261,4 @@ class Regex:
                 self.automata.append(BuildNFA.dot_struct(b, a))
 
 
-R1 = Regex(regex, alphabet)
-R1.display_details()
+R1 = Regex(regex, alphabet, "ab")
