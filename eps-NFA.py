@@ -2,6 +2,7 @@ import os
 
 from DFA import State, DFA
 
+os.environ["PATH"] += os.pathsep + 'C:\\Users\\R\\Downloads\\graphviz-2.38\\release\\bin'
 
 class eNFA:
     def __init__(self, Q, initialState, alpha, Delta, F):
