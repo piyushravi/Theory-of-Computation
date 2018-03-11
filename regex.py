@@ -95,7 +95,8 @@ class NFA:
     def run_eNFA(self, input):
         current_states = [self.startstate]
         for k, v in self.transitions[self.startstate].items():
-            current_states.append(k)
+            if ''.join(v) == self.epsilon:
+                current_states.append(k)
         current_states = list(set(current_states))
 
         for char in input:
@@ -280,4 +281,4 @@ class Regex:
                 self.automata.append(BuildNFA.dot_struct(b, a))
 
 
-R1 = Regex(regex, alphabet, "ab")
+R1 = Regex(regex, alphabet, "0")
