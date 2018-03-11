@@ -280,15 +280,4 @@ class Regex:
                 self.automata.append(BuildNFA.dot_struct(b, a))
 
 
-def drawGraph(automata, file=""):
-    """From https://github.com/max99x/automata-editor/blob/master/util.py"""
-    f = popen(r"dot -Tpng -o graph%s.png" % file, 'w')
-    try:
-        f.write(automata.getDotFile())
-    except:
-        raise BaseException("Error creating graph")
-    finally:
-        f.close()
-
-
 R1 = Regex(regex, alphabet, "")
