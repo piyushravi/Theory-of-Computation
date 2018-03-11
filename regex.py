@@ -96,7 +96,7 @@ class NFA:
         current_states = [self.startstate]
         for k, v in self.transitions[self.startstate].items():
             if ''.join(v) == self.epsilon:
-                current_states.append(k)
+                current_states = current_states + list(self.getEClose(k))
         current_states = list(set(current_states))
 
         for char in input:
@@ -106,7 +106,6 @@ class NFA:
                     for k, v in self.transitions[state].items():
                         if ''.join(v) == char:
                             nextState = list(set(nextState + list(self.getEClose(k))))
-
             current_states = nextState
 
         for y in current_states:
@@ -281,4 +280,15 @@ class Regex:
                 self.automata.append(BuildNFA.dot_struct(b, a))
 
 
-R1 = Regex(regex, alphabet, "0")
+def drawGraph(automata, file=""):
+    """From https://github.com/max99x/automata-editor/blob/master/util.py"""
+    f = popen(r"dot -Tpng -o graph%s.png" % file, 'w')
+    try:
+        f.write(automata.getDotFile())
+    except:
+        raise BaseException("Error creating graph")
+    finally:
+        f.close()
+
+
+R1 = Regex(regex, alphabet, "")
